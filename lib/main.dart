@@ -1,7 +1,23 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
+import 'package:file_selector/file_selector.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:http/src/client.dart';
+import 'package:imgbb_uploader/src/service/imgbb.dart';
+
+import 'package:http/http.dart' as http;
+
+import 'src/routes/home.dart';
+
+final ImgbbProvider = Provider<ImageBB>((ref) {
+  http.Client httpClient = http.Client();
+  var imageBB = ImageBB(httpClient);
+  return imageBB;
+});
 
 void main() {
-  runApp(App());
+  runApp(const App());
 }
 
 class App extends StatelessWidget {
@@ -9,10 +25,8 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(),
-      ),
+    return const MaterialApp(
+      home: HomePage(),
     );
   }
 }

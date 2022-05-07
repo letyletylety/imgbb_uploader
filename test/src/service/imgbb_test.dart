@@ -12,9 +12,12 @@ void main() {
     },
   );
 
-  test('descriptiohn', () {
+  test('descriptiohn', () async {
     final imgbb = ImageBB(FakeHttpClient());
     // imgbb.handle400(resp);
+    var resp = await imgbb.post('apiKey', 'image');
+
+    var hand = await imgbb.handle(resp);
   });
 }
 
@@ -22,5 +25,5 @@ Future fakePost() async {
   final imgbb = ImageBB(FakeHttpClient());
   final upload =
       await imgbb.upload('this is mock key', 'this is beautiful image');
-  print(upload.toString());
+  // print(upload.toString());
 }

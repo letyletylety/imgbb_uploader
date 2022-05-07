@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:http/http.dart' as http;
+import 'package:logger/logger.dart';
 
 /// imagebb api
 /// key (required)
@@ -29,24 +30,28 @@ class ImageBB {
     int? expiration,
     String? name,
   ]) async {
-    final http.Response resp = await _post(apiKey, image, expiration, name);
+    final http.Response resp = await post(apiKey, image, expiration, name);
 
-    switch (resp.statusCode) {
-      case 200:
-        bool isSuccess = await _convert(resp);
-        break;
-      case 400:
-        handle400(resp);
-        break;
-      default:
-    }
+    await handle(resp);
 
     // if (resp.statusCode == 200) {
     //   return isSuccess;
     // } else {}
   }
 
-  Future<http.Response> _post(
+  Future handle(http.Response resp) async {
+    switch (resp.statusCode) {
+      case 200:
+        bool isSuccess = await _convert(resp);
+        break;
+      case 400:
+        await handle400(resp);
+        break;
+      default:
+    }
+  }
+
+  Future<http.Response> post(
     String apiKey,
     String image, [
     int? expiration,
@@ -84,7 +89,14 @@ class ImageBB {
     return resp;
   }
 
-  Future handle400(resp) async {}
+  Future handle400(http.Response resp) async {
+    var data = await jsonDecode(resp.body);
+    var error = data['error'];
+    // var errorObj = await json.decode(error);
+    var errorMsg = error['message'];
+
+    Logger().e(errorMsg);
+  }
 
   /// return whether success or not
   Future<bool> _convert(http.Response response) async {

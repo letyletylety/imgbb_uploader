@@ -9,18 +9,9 @@ class FakeHttpClient implements http.Client {
   @override
   Future<http.Response> post(Uri url,
       {Map<String, String>? headers, Object? body, Encoding? encoding}) async {
-    var rand = Random.secure().nextInt(10);
+    final params = url.queryParameters;
 
-    if (rand == 1) {
-      /// 10 % error
-      var exampleJson =
-          File('lib/src/service/example_error_resp.json').readAsStringSync();
-      final http.Response exampleErrorResp = http.Response(exampleJson, 400);
-
-      var future = Future.delayed(
-          const Duration(milliseconds: 250), () => exampleErrorResp);
-      return future;
-    } else { 
+    if ((params['key'] ?? "").isNotEmpty) {
       /// 90% right way
       var exampleJson =
           File('lib/src/service/example_resp.json').readAsStringSync();
@@ -29,6 +20,15 @@ class FakeHttpClient implements http.Client {
 
       var future =
           Future.delayed(const Duration(milliseconds: 250), () => exampleResp);
+      return future;
+    } else {
+      /// 10 % error
+      var exampleJson =
+          File('lib/src/service/example_error_resp.json').readAsStringSync();
+      final http.Response exampleErrorResp = http.Response(exampleJson, 400);
+
+      var future = Future.delayed(
+          const Duration(milliseconds: 250), () => exampleErrorResp);
       return future;
     }
   }
