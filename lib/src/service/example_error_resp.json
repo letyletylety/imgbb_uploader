@@ -1,0 +1,8 @@
+{
+    "status_code": 400,
+    "error": {
+        "message": "Invalid API v1 key.",
+        "code": 100
+    },
+    "status_txt": "Bad Request"
+}
