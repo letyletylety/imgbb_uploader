@@ -1,20 +1,19 @@
+import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:imgbb_uploader/src/component/xfile_grid.dart';
+import 'package:imgbb_uploader/src/provider/upfile_list.dart';
 
 import '../component/platform_error.dart';
 
-class HomePage extends StatefulWidget {
+class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
-  @override
-  State<HomePage> createState() => _HomePageState();
-}
-
-class _HomePageState extends State<HomePage> {
-  List<XFile> xfiles = [];
+  // Set<XFile> xfiles = {};
 
   @override
   Widget build(BuildContext context) {
@@ -23,79 +22,162 @@ class _HomePageState extends State<HomePage> {
         milliseconds: 250,
       );
 
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Hello'),
-        ),
-        body: Center(
-          child: Column(
-            children: [
-              Expanded(
-                child: AnimatedContainer(
-                  duration: animationDuration,
-                  child: Builder(builder: (context) {
-                    if (xfiles.isEmpty) {
-                      return fileSelectButton();
-                    } else {
-                      return Column(
-                        children: [
-                          Expanded(
-                            child: XFileGrid(
-                              key: ValueKey(xfiles.length),
-                              xfiles: xfiles,
+      return Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          final xfiles = ref.watch(upFilesProvider);
+
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Hello'),
+            ),
+            body: Center(
+              child: Column(
+                children: [
+                  Expanded(
+                    child: xfiles.isEmpty
+                        ? const FileSelectButton(
+                            size: 200,
+                            fontSize: 24,
+                          )
+                        : Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const Expanded(
+                                  child: XFileGrid(
+                                      // key: ValueKey(xfiles.length),
+                                      // xfiles: xfiles,
+                                      ),
+                                ),
+                                Stack(
+                                  children: [
+                                    const FileSelectButton(
+                                      size: 100,
+                                      fontSize: 12,
+                                    ),
+                                    // fileSelectButton(100),
+                                    IconButton(
+                                      splashColor: Colors.blue,
+                                      onPressed: () {
+                                        ref
+                                            .read(upFilesProvider.notifier)
+                                            .clear();
+                                        // .update((state) => {});
+                                        // .state
+                                        // .clear();
+                                        // setState(() {
+                                        //   xfiles.clear();
+                                        // });
+                                      },
+                                      icon: const Icon(Icons.clear),
+                                    )
+                                  ],
+                                )
+                              ],
                             ),
                           ),
-                          fileSelectButton()
-                        ],
-                      );
-                    }
-                  }),
-                ),
+                  ),
+                  Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: ElevatedButton(
+                        onPressed: _onUploadButtonPressed,
+                        child: const Text('upload!'),
+                      ),
+                    ),
+                  )
+                ],
               ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: ElevatedButton(
-                  onPressed: _onUploadButtonPressed,
-                  child: Text('upload!'),
-                ),
-              )
-            ],
-          ),
-          // child: DragTargetWidget(),
-        ),
+              // child: DragTargetWidget(),
+            ),
+          );
+        },
       );
     } else {
       return const PlatformErrorPage();
     }
   }
 
-  Widget fileSelectButton() {
+  // Widget fileSelectButton(
+  //   double size, {
+  //   double fontSize = 24,
+  // }) {
+  //   if (size == 100) {
+  //     fontSize = 12;
+  //   }
+
+  //   return Center(
+  //     child: ElevatedButton(
+  //       child: Text(
+  //         '파일 선택',
+  //         style: TextStyle(fontSize: fontSize),
+  //       ),
+  //       onPressed: _onFileSelectButtonPressed,
+  //       style: ElevatedButton.styleFrom(
+  //         fixedSize: Size(size, size),
+  //         shape: const CircleBorder(),
+  //       ),
+  //     ),
+  //   );
+  // }
+
+  _onUploadButtonPressed() {}
+}
+
+class FileSelectButton extends StatelessWidget {
+  const FileSelectButton({
+    Key? key,
+    this.fontSize = 24,
+    this.size = 200,
+  }) : super(key: key);
+
+  final double fontSize;
+  final double size;
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(
-        child: const Text(
+      child: Consumer(
+        builder: (BuildContext context, WidgetRef ref, Widget? child) {
+          return ElevatedButton(
+            child: child,
+            onPressed: () => _onFileSelectButtonPressed(ref),
+            style: ElevatedButton.styleFrom(
+              fixedSize: Size(size, size),
+              shape: const CircleBorder(),
+            ),
+          );
+        },
+        child: Text(
           '파일 선택',
-          style: TextStyle(fontSize: 24),
-        ),
-        onPressed: _onFileSelectButtonPressed,
-        style: ElevatedButton.styleFrom(
-          fixedSize: const Size(200, 200),
-          shape: const CircleBorder(),
+          style: TextStyle(fontSize: fontSize),
         ),
       ),
     );
   }
 
-  _onFileSelectButtonPressed() async {
+  _onFileSelectButtonPressed(WidgetRef ref) async {
+    // final xFileController = ref.read(xFilesProvider.notifier);
+
     final typeGroup = XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
 
     await openFile(acceptedTypeGroups: [typeGroup]).then(
-      (value) => setState(() {
-        if (value != null) xfiles.add(value);
+      (value) {
+        if (value != null) {
+          bool result = ref.read(upFilesProvider.notifier).add(value);
+          if (result) {
+            log('add file');
+          } else {
+            log('?');
+          }
 
-        /// TODO : if null ?
-      }),
+          // state.add(value);
+        }
+
+        /// : if null ?
+      },
     );
   }
-
-  _onUploadButtonPressed() {}
 }

@@ -9,9 +9,9 @@ class PlatformErrorPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Not MacOS'),
+        title: const Text('Not MacOS'),
       ),
-      body: Center(
+      body: const Center(
           // child: DragTargetWidget(),
           ),
     );
