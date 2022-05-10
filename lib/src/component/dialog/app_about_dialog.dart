@@ -8,7 +8,14 @@ class AppAboutDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AboutDialog(
+    return AboutDialog(
+      applicationIcon: Image.asset(
+        'assets/images/app_logo.png',
+        width: 48,
+        height: 48,
+        cacheHeight: 256,
+        cacheWidth: 256,
+      ),
       applicationName: 'imgbb_uploader',
       applicationVersion: '1.0',
       children: [
