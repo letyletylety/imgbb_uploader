@@ -16,6 +16,35 @@ import '../component/platform_error.dart';
 
 // final homeKeyProvider = Provider<GlobalKey>((ref) => GlobalKey());
 
+final uploadFutureProvider = FutureProvider<List<http.Response>>((ref) async {
+  Set<XFile> upfiles = ref.read(upFilesProvider);
+  final apiKey = ref.read(apiKeyProvider);
+
+  List<http.Response> ret = [];
+
+  for (var file in upfiles) {
+    // TODO : 이미지 byte 를 한번만 저장하는게 좋음. 이미지를 보여주기 위한 데이터를 활용할 것
+    // WARNING: 임시 코드
+    final imageByte = await file.readAsBytes();
+    String base64encodedImage = base64Encode(imageByte);
+
+    http.Response resp = await ref.read(imgbbProvider).upload(
+          apiKey,
+          // imageByte.toString(),n
+          base64encodedImage,
+        );
+
+    ret.add(resp);
+  }
+  return ret;
+});
+
+final uploadResponseProvider = StateProvider<List<http.Response>>((ref) {
+  AsyncValue<List<http.Response>> watch = ref.watch(uploadFutureProvider);
+  return watch.when<List<http.Response>>(
+      data: (data) => data, error: (e, st) => [], loading: () => []);
+});
+
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -28,6 +57,21 @@ class HomePage extends StatelessWidget {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
           // final keyy = ref.watch(homeKeyProvider);
+          final key = ref.watch(apiKeyProvider);
+
+          ref.listen<List<http.Response>>(
+            uploadResponseProvider,
+            (previous, next) {
+              if (next.isNotEmpty) {
+                showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                      content: Text(next.fold(
+                          '', (value, element) => value + element.body))),
+                );
+              }
+            },
+          );
 
           return Scaffold(
             // key: keyy,
@@ -176,27 +220,28 @@ class HomePage extends StatelessWidget {
       return;
     }
 
-    Set<XFile> upfiles = ref.watch(upFilesProvider);
+    // ref.read(upFilesProvider.notifier).uploadFiles();
 
-    for (var file in upfiles) {
-      // TODO : 이미지 byte 를 한번만 저장하는게 좋음. 이미지를 보여주기 위한 데이터를 활용할 것
-      // WARNING: 임시 코드
-      final imageByte = await file.readAsBytes();
-      String base64encodedImage = base64Encode(imageByte);
+    // Set<XFile> upfiles = ref.watch(upFilesProvider);
 
-      http.Response resp = await ref.read(imgbbProvider).upload(
-            apiKey,
-            // imageByte.toString(),n
-            base64encodedImage,
-          );
+    // for (var file in upfiles) {
+    //   // TODO : 이미지 byte 를 한번만 저장하는게 좋음. 이미지를 보여주기 위한 데이터를 활용할 것
+    //   // WARNING: 임시 코드
+    //   final imageByte = await file.readAsBytes();
+    //   String base64encodedImage = base64Encode(imageByte);
 
-      showDialog(
-        context: context,
-        builder: (context) => AlertDialog(
-          content: Text(resp.body),
-        ),
-      );
-    }
+    //   http.Response resp = await ref.read(imgbbProvider).upload(
+    //         apiKey,
+    //         // imageByte.toString(),n
+    //         base64encodedImage,
+    //       );
+
+    // ref.read(uploadFutureTrigger.notifier).state = true;
+    ref.refresh(uploadFutureProvider);
+
+    // respList.whenData((data) {
+    // });
+    // }
   }
 }
 
