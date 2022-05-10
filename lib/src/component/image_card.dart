@@ -120,7 +120,7 @@ class InfoButton extends StatelessWidget {
           height: 30,
           child: Center(
             child: MaterialButton(
-              color: Colors.blue,
+              color: Color.fromARGB(255, 0, 76, 139),
               onPressed: () {
                 log('message');
               },
@@ -162,7 +162,7 @@ class ClearButton extends StatelessWidget {
           width: 30,
           height: 30,
           child: MaterialButton(
-            color: Colors.blue,
+            color: Colors.lightBlue[900],
             // shape: const CircleBorder(),
             onPressed: removeCallback,
             // () {

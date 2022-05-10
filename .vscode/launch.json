@@ -4,12 +4,20 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
+        // {
+        //     "name": "imgbb_uploader",
+        //     "request": "launch",
+        //     "type": "dart",
+        //     "args": [
+        //         "--dart-define=API_KEY=a7d978c006edd82710c5f7e0243a06b8"
+        //     ]
+        // },
         {
-            "name": "imgbb_uploader",
+            "name": "imgbb_uploader no api key",
             "request": "launch",
             "type": "dart",
             "args": [
-                "--dart-define=API_KEY=a7d978c006edd82710c5f7e0243a06b8"
+                // "--dart-define=API_KEY=a7d978c006edd82710c5f7e0243a06b8"
             ]
         },
         {

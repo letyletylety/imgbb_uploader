@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:imgbb_uploader/src/component/image_card.dart';
 import 'package:logger/logger.dart';
@@ -34,17 +35,20 @@ class ImageBB {
     final http.BaseResponse resp =
         await postMP(apiKey, image, expiration, name);
 
-    if (resp.statusCode == 200) {
-      l('uploaded!');
+    final streamed = (resp as http.StreamedResponse);
 
-      final streamed = (resp as http.StreamedResponse);
+    var response = await http.Response.fromStream(streamed);
+    l(response.body);
 
-      return true;
-    } else {
-      l(resp.statusCode, Level.error);
-    }
+    await handle(response);
+    // if (resp.statusCode == 200) {
+    //   l('uploaded!');
+
+    //   return true;
+    // } else {
+    //   l(resp.statusCode, Level.error);
+    // }
     // l('handle');
-    // await handle(resp);
   }
 
   Future handle(http.Response resp) async {
@@ -59,6 +63,7 @@ class ImageBB {
     }
   }
 
+  /// post multipart
   Future<http.BaseResponse> postMP(
     String apiKey,
     // XFile file,
@@ -97,8 +102,10 @@ class ImageBB {
     final request = http.MultipartRequest('POST', reqUrl)
       ..fields['image'] = image;
     final resp = await httpClient.send(request);
+
     l(resp.statusCode);
     l(resp.reasonPhrase);
+
     // final http.Response resp = await httpClient.post(
     //   reqUrl,
     //   body: image,

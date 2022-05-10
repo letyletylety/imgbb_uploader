@@ -13,7 +13,19 @@ final imgbbProvider = Provider<ImageBB>((ref) {
 });
 
 void main() {
-  runApp(const ProviderScope(child: App()));
+  // const apiKey = String.fromEnvironment('API_KEY');
+
+  runApp(
+    const ProviderScope(
+      overrides: [
+        // apiKeyProvider.overrideWithValue(
+        //   apiKey,
+        // ),
+      ],
+      child: App(),
+      observers: [],
+    ),
+  );
 }
 
 class App extends StatelessWidget {
@@ -21,8 +33,11 @@ class App extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomePage(),
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.lightBlue)),
+      home: const HomePage(),
     );
   }
 }

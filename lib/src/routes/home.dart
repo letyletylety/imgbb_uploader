@@ -6,10 +6,14 @@ import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:imgbb_uploader/main.dart';
+import 'package:imgbb_uploader/src/component/dialog/dialog.dart';
 import 'package:imgbb_uploader/src/component/xfile_grid.dart';
+import 'package:imgbb_uploader/src/provider/api_key.dart';
 import 'package:imgbb_uploader/src/provider/upfile_list.dart';
 
 import '../component/platform_error.dart';
+
+final homeKeyProvider = Provider<GlobalKey>((ref) => GlobalKey());
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -22,10 +26,32 @@ class HomePage extends StatelessWidget {
       return Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
+          final keyy = ref.watch(homeKeyProvider);
 
           return Scaffold(
+            key: keyy,
             appBar: AppBar(
-              title: const Text('Hello'),
+              title: const Text('Imgbb uploader'),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const AppAboutDialog(),
+                    );
+                  },
+                  icon: const Icon(Icons.info),
+                ),
+                IconButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (context) => const SettingsDialog(),
+                    );
+                  },
+                  icon: const Icon(Icons.settings),
+                ),
+              ],
             ),
             body: Center(
               child: Column(
@@ -55,27 +81,14 @@ class HomePage extends StatelessWidget {
                                     ),
                                     // fileSelectButton(100),
                                     IconButton(
-                                      splashColor: Colors.blue,
+                                      tooltip: '모두 지우기',
+                                      // splashColor: Colors.blue,
                                       onPressed: () async {
                                         final bool result =
                                             await showDialog<bool>(
                                                   context: context,
                                                   builder: (context) =>
-                                                      AlertDialog(
-                                                    title: Text('전부 지울까요?'),
-                                                    actionsAlignment:
-                                                        MainAxisAlignment
-                                                            .center,
-                                                    actions: [
-                                                      TextButton(
-                                                        onPressed: () {
-                                                          Navigator.pop<bool>(
-                                                              context, true);
-                                                        },
-                                                        child: Text('네'),
-                                                      )
-                                                    ],
-                                                  ),
+                                                      const ClearDialog(),
                                                 ) ??
                                                 false;
 
@@ -91,7 +104,7 @@ class HomePage extends StatelessWidget {
                                         //   xfiles.clear();
                                         // });
                                       },
-                                      icon: const Icon(Icons.clear),
+                                      icon: const Icon(Icons.clear_all),
                                     )
                                   ],
                                 )
@@ -99,18 +112,19 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                   ),
-                  Align(
-                    alignment: Alignment.bottomCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          _onUploadButtonPressed(ref);
-                        },
-                        child: const Text('upload!'),
+                  if (xfiles.isNotEmpty)
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _onUploadButtonPressed(context, ref);
+                          },
+                          child: const Text('upload!'),
+                        ),
                       ),
-                    ),
-                  )
+                    )
                 ],
               ),
               // child: DragTargetWidget(),
@@ -146,11 +160,19 @@ class HomePage extends StatelessWidget {
   //   );
   // }
 
-  _onUploadButtonPressed(WidgetRef ref) async {
-    const apiKey = String.fromEnvironment('API_KEY');
+  _onUploadButtonPressed(BuildContext context, WidgetRef ref) async {
+    // const apiKey = String.fromEnvironment('API_KEY');
+    final apiKey = ref.watch(apiKeyProvider);
 
     if (apiKey == "") {
-      throw Exception('apiKey is missing');
+      showDialog<bool>(
+          context: context,
+          builder: (context) => const SettingsDialog()).then((value) {
+        if (value == true) {
+          return _onUploadButtonPressed(context, ref);
+        }
+      });
+      return;
     }
 
     Set<XFile> upfiles = ref.watch(upFilesProvider);
@@ -195,7 +217,7 @@ class FileSelectButton extends StatelessWidget {
           );
         },
         child: Text(
-          '파일 선택',
+          '파일 추가',
           style: TextStyle(fontSize: fontSize),
         ),
       ),
