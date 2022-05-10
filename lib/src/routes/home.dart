@@ -18,10 +18,6 @@ class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (Platform.isMacOS) {
-      const animationDuration = Duration(
-        milliseconds: 250,
-      );
-
       return Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
@@ -59,10 +55,34 @@ class HomePage extends StatelessWidget {
                                     // fileSelectButton(100),
                                     IconButton(
                                       splashColor: Colors.blue,
-                                      onPressed: () {
-                                        ref
-                                            .read(upFilesProvider.notifier)
-                                            .clearFile();
+                                      onPressed: () async {
+                                        final bool result =
+                                            await showDialog<bool>(
+                                                  context: context,
+                                                  builder: (context) =>
+                                                      AlertDialog(
+                                                    title: Text('전부 지울까요?'),
+                                                    actionsAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    actions: [
+                                                      TextButton(
+                                                        onPressed: () {
+                                                          Navigator.pop<bool>(
+                                                              context, true);
+                                                        },
+                                                        child: Text('네'),
+                                                      )
+                                                    ],
+                                                  ),
+                                                ) ??
+                                                false;
+
+                                        if (result == true) {
+                                          ref
+                                              .read(upFilesProvider.notifier)
+                                              .clearFile();
+                                        }
                                         // .update((state) => {});
                                         // .state
                                         // .clear();

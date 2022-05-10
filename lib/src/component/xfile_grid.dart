@@ -23,15 +23,17 @@ class XFileGrid extends StatelessWidget {
           decoration: BoxDecoration(
             border: Border.all(),
           ),
-          child: Wrap(
-            children: xfiles
-                .map(
-                  // (e) => Text(e.path),
-                  (e) => FileImage(
-                    xfile: e,
-                  ),
-                )
-                .toList(),
+          child: Center(
+            child: Wrap(
+              children: xfiles
+                  .map(
+                    // (e) => Text(e.path),
+                    (e) => FileImage(
+                      xfile: e,
+                    ),
+                  )
+                  .toList(),
+            ),
           ),
         );
       },
