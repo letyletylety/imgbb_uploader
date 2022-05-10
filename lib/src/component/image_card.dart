@@ -70,14 +70,14 @@ class ImageCard extends HookConsumerWidget {
                 },
               ),
               // if (isHover.value)
-              InfoButton(
-                animationDuration: animationDuration,
-                isHover: isHover,
-                showInfoCallback: () {
-                  l('showInfo');
-                  isHover.value = !isHover.value;
-                },
-              )
+              // InfoButton(
+              //   animationDuration: animationDuration,
+              //   isHover: isHover,
+              //   showInfoCallback: () {
+              //     l('showInfo');
+              //     isHover.value = !isHover.value;
+              //   },
+              // )
             ],
           ),
         ),
@@ -160,24 +160,22 @@ class ClearButton extends StatelessWidget {
         child: SizedBox(
           width: 30,
           height: 30,
-          child: Consumer(builder: (context, ref, child) {
-            return MaterialButton(
-              color: Colors.blue,
-              // shape: const CircleBorder(),
-              onPressed: () => removeCallback,
-              // () {
-              //   ref.read(upFilesProvider.notifier).remove();
-              //   // log('message');
-              // },
-              child: const Center(
-                child: Icon(
-                  Icons.clear,
-                  size: 15,
-                  color: Colors.white,
-                ),
+          child: MaterialButton(
+            color: Colors.blue,
+            // shape: const CircleBorder(),
+            onPressed: removeCallback,
+            // () {
+            //   ref.read(upFilesProvider.notifier).remove();
+            //   // log('message');
+            // },
+            child: const Center(
+              child: Icon(
+                Icons.clear,
+                size: 15,
+                color: Colors.white,
               ),
-            );
-          }),
+            ),
+          ),
         ),
       ),
     );
