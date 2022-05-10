@@ -25,7 +25,7 @@ class ImageBB {
 
 // API v1 calls can be done using the POST or GET request methods but since GET request are limited by the maximum allowed length of an URL you should prefer the POST request method.
 
-  Future upload(
+  Future<http.Response> upload(
     String apiKey,
     String image, [
     int? expiration,
@@ -40,7 +40,9 @@ class ImageBB {
     var response = await http.Response.fromStream(streamed);
     l(response.body);
 
-    await handle(response);
+    return response;
+
+    // await handle(response);
     // if (resp.statusCode == 200) {
     //   l('uploaded!');
 
@@ -54,7 +56,7 @@ class ImageBB {
   Future handle(http.Response resp) async {
     switch (resp.statusCode) {
       case 200:
-        bool isSuccess = await _convert(resp);
+        bool isSuccess = await handle200(resp);
         break;
       case 400:
         await handle400(resp);
@@ -168,7 +170,7 @@ class ImageBB {
   }
 
   /// return whether success or not
-  Future<bool> _convert(http.Response response) async {
+  Future<bool> handle200(http.Response response) async {
     final body = response.body;
     final data = await jsonDecode(body);
 
