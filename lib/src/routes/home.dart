@@ -5,7 +5,7 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
-import 'package:http/src/response.dart';
+import 'package:http/http.dart' as http;
 import 'package:imgbb_uploader/main.dart';
 import 'package:imgbb_uploader/src/component/dialog/dialog.dart';
 import 'package:imgbb_uploader/src/component/xfile_grid.dart';
@@ -23,7 +23,7 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (Platform.isMacOS) {
+    if (Platform.isMacOS || Platform.isWindows) {
       return Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
@@ -184,7 +184,7 @@ class HomePage extends StatelessWidget {
       final imageByte = await file.readAsBytes();
       String base64encodedImage = base64Encode(imageByte);
 
-      Response resp = await ref.read(imgbbProvider).upload(
+      http.Response resp = await ref.read(imgbbProvider).upload(
             apiKey,
             // imageByte.toString(),n
             base64encodedImage,
