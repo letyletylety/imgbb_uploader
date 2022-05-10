@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:http/src/response.dart';
 import 'package:imgbb_uploader/main.dart';
 import 'package:imgbb_uploader/src/component/dialog/dialog.dart';
 import 'package:imgbb_uploader/src/component/xfile_grid.dart';
@@ -183,11 +184,18 @@ class HomePage extends StatelessWidget {
       final imageByte = await file.readAsBytes();
       String base64encodedImage = base64Encode(imageByte);
 
-      var resp = await ref.read(imgbbProvider).upload(
+      Response resp = await ref.read(imgbbProvider).upload(
             apiKey,
             // imageByte.toString(),n
             base64encodedImage,
           );
+
+      showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          content: Text(resp.body),
+        ),
+      );
     }
   }
 }
