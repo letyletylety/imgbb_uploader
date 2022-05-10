@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:imgbb_uploader/main.dart';
 import 'package:imgbb_uploader/src/component/xfile_grid.dart';
 import 'package:imgbb_uploader/src/provider/upfile_list.dart';
 
@@ -103,7 +104,9 @@ class HomePage extends StatelessWidget {
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: ElevatedButton(
-                        onPressed: _onUploadButtonPressed,
+                        onPressed: () {
+                          _onUploadButtonPressed(ref);
+                        },
                         child: const Text('upload!'),
                       ),
                     ),
@@ -143,7 +146,28 @@ class HomePage extends StatelessWidget {
   //   );
   // }
 
-  _onUploadButtonPressed() {}
+  _onUploadButtonPressed(WidgetRef ref) async {
+    const apiKey = String.fromEnvironment('API_KEY');
+
+    if (apiKey == "") {
+      throw Exception('apiKey is missing');
+    }
+
+    Set<XFile> upfiles = ref.watch(upFilesProvider);
+
+    for (var file in upfiles) {
+      // TODO : 이미지 byte 를 한번만 저장하는게 좋음. 이미지를 보여주기 위한 데이터를 활용할 것
+      // WARNING: 임시 코드
+      final imageByte = await file.readAsBytes();
+      String base64encodedImage = base64Encode(imageByte);
+
+      await ref.read(imgbbProvider).upload(
+            apiKey,
+            // imageByte.toString(),
+            base64encodedImage,
+          );
+    }
+  }
 }
 
 class FileSelectButton extends StatelessWidget {

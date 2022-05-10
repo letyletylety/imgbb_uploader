@@ -86,11 +86,12 @@ class ImageCard extends HookConsumerWidget {
   }
 }
 
-void l(dynamic s) {
+void l(dynamic s, [Level? level]) {
   Logger(
+      level: level,
       printer: PrettyPrinter(
-    methodCount: 0,
-  )).d(s);
+        methodCount: 0,
+      )).d(s);
 }
 
 class InfoButton extends StatelessWidget {

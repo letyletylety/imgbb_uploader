@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:imgbb_uploader/src/component/image_card.dart';
 import 'package:logger/logger.dart';
 
 /// imagebb api
@@ -29,13 +30,21 @@ class ImageBB {
     int? expiration,
     String? name,
   ]) async {
-    final http.Response resp = await post(apiKey, image, expiration, name);
+    l('post');
+    final http.BaseResponse resp =
+        await postMP(apiKey, image, expiration, name);
 
-    await handle(resp);
+    if (resp.statusCode == 200) {
+      l('uploaded!');
 
-    // if (resp.statusCode == 200) {
-    //   return isSuccess;
-    // } else {}
+      final streamed = (resp as http.StreamedResponse);
+
+      return true;
+    } else {
+      l(resp.statusCode, Level.error);
+    }
+    // l('handle');
+    // await handle(resp);
   }
 
   Future handle(http.Response resp) async {
@@ -50,6 +59,57 @@ class ImageBB {
     }
   }
 
+  Future<http.BaseResponse> postMP(
+    String apiKey,
+    // XFile file,
+    String image, [
+    int? expiration,
+    String? name,
+  ]) async {
+    Map<String, String> queryParameters = {
+      'key': apiKey,
+      // 'image': image,
+    };
+    // handle expiration
+    if (expiration != null) {
+      if (expiration >= 60 && expiration <= 15552000) {
+        queryParameters.addAll({'expiration': expiration.toString()});
+      } else {
+        log('expiration is not in range [60, 15552000]');
+      }
+    }
+
+    // handle name
+    if (name != null) {
+      queryParameters.addAll({'name': name});
+    }
+
+    /// make request Url
+    var reqUrl = Uri.https(
+      'api.imgbb.com',
+      '/1/upload',
+      queryParameters,
+    );
+
+    // final request = http.MultipartRequest('POST', reqUrl);
+    // request.
+    // request.files.add(value)
+    final request = http.MultipartRequest('POST', reqUrl)
+      ..fields['image'] = image;
+    final resp = await httpClient.send(request);
+    l(resp.statusCode);
+    l(resp.reasonPhrase);
+    // final http.Response resp = await httpClient.post(
+    //   reqUrl,
+    //   body: image,
+    //   headers: <String, String>{
+    //     'Content-Type': 'multipart/form-data',
+    //   },
+    // );
+    return resp;
+  }
+
+  @Deprecated('')
   Future<http.Response> post(
     String apiKey,
     String image, [
@@ -58,7 +118,7 @@ class ImageBB {
   ]) async {
     Map<String, String> queryParameters = {
       'key': apiKey,
-      // 'image': image,
+      'image': image,
     };
     if (expiration != null) {
       if (expiration >= 60 && expiration <= 15552000) {
@@ -77,6 +137,9 @@ class ImageBB {
       '/1/upload',
       queryParameters,
     );
+
+    // final request = http.MultipartRequest('POST', reqUrl);
+    // request.files.add(value)
 
     final http.Response resp = await httpClient.post(
       reqUrl,
