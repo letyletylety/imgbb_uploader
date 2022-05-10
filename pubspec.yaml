@@ -37,7 +37,7 @@ dependencies:
   http: ^0.13.4
   logger: ^1.1.0
   desktop_drop: ^0.3.3
-  cross_file: ^0.3.3
+  # cross_file: ^0.3.3
   file_selector: ^0.8.4+1
   flutter_hooks: ^0.18.3
   hooks_riverpod: ^1.0.3

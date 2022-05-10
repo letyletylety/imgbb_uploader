@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
 
@@ -12,7 +13,7 @@ import 'package:logger/logger.dart';
 //   return XFile('');
 // });
 
-class ImageCard extends HookWidget {
+class ImageCard extends HookConsumerWidget {
   const ImageCard({
     Key? key,
     required this.data,
@@ -25,7 +26,7 @@ class ImageCard extends HookWidget {
   final XFile xfile;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, ref) {
     final fileName = xfile.name;
 
     final isHover = useState(false);
@@ -61,29 +62,27 @@ class ImageCard extends HookWidget {
               ClearButton(
                 animationDuration: animationDuration,
                 isHover: isHover,
-                removeCallback: remove,
+                removeCallback: () {
+                  l('clear');
+                  final result =
+                      ref.read(upFilesProvider.notifier).removeFile(xfile);
+                  l(result);
+                },
               ),
               // if (isHover.value)
               InfoButton(
                 animationDuration: animationDuration,
                 isHover: isHover,
-                showInfoCallback: showInfo,
+                showInfoCallback: () {
+                  l('showInfo');
+                  isHover.value = !isHover.value;
+                },
               )
             ],
           ),
         ),
       ),
     );
-  }
-
-  remove() {
-    l('clear');
-
-    
-  }
-
-  showInfo() {
-    l('showInfo');
   }
 }
 

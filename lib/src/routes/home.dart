@@ -62,7 +62,7 @@ class HomePage extends StatelessWidget {
                                       onPressed: () {
                                         ref
                                             .read(upFilesProvider.notifier)
-                                            .clear();
+                                            .clearFile();
                                         // .update((state) => {});
                                         // .state
                                         // .clear();
@@ -166,7 +166,7 @@ class FileSelectButton extends StatelessWidget {
     await openFile(acceptedTypeGroups: [typeGroup]).then(
       (value) {
         if (value != null) {
-          bool result = ref.read(upFilesProvider.notifier).add(value);
+          bool result = ref.read(upFilesProvider.notifier).addFile(value);
           if (result) {
             log('add file');
           } else {

@@ -7,13 +7,13 @@ final upFilesProvider =
 class UpFileList extends StateNotifier<Set<XFile>> {
   UpFileList() : super({});
 
-  bool add(XFile file) {
+  bool addFile(XFile file) {
     final result = state.add(file);
     state = {...state};
     return result;
   }
 
-  bool remove(XFile file) {
+  bool removeFile(XFile file) {
     final result = state.remove(file);
 
     state = {...state};
@@ -22,7 +22,7 @@ class UpFileList extends StateNotifier<Set<XFile>> {
     return result;
   }
 
-  clear() {
+  clearFile() {
     state = {};
   }
 }

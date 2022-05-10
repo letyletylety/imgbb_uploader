@@ -6,7 +6,6 @@ import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:imgbb_uploader/src/component/image_card.dart';
 import 'package:imgbb_uploader/src/provider/upfile_list.dart';
-import 'package:imgbb_uploader/src/routes/home.dart';
 
 class XFileGrid extends StatelessWidget {
   const XFileGrid({
