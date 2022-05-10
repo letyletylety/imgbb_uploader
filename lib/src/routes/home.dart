@@ -13,7 +13,7 @@ import 'package:imgbb_uploader/src/provider/upfile_list.dart';
 
 import '../component/platform_error.dart';
 
-final homeKeyProvider = Provider<GlobalKey>((ref) => GlobalKey());
+// final homeKeyProvider = Provider<GlobalKey>((ref) => GlobalKey());
 
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -26,10 +26,10 @@ class HomePage extends StatelessWidget {
       return Consumer(
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
-          final keyy = ref.watch(homeKeyProvider);
+          // final keyy = ref.watch(homeKeyProvider);
 
           return Scaffold(
-            key: keyy,
+            // key: keyy,
             appBar: AppBar(
               title: const Text('Imgbb uploader'),
               actions: [
@@ -183,9 +183,9 @@ class HomePage extends StatelessWidget {
       final imageByte = await file.readAsBytes();
       String base64encodedImage = base64Encode(imageByte);
 
-      await ref.read(imgbbProvider).upload(
+      var resp = await ref.read(imgbbProvider).upload(
             apiKey,
-            // imageByte.toString(),
+            // imageByte.toString(),n
             base64encodedImage,
           );
     }
