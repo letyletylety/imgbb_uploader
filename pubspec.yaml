@@ -61,7 +61,7 @@ flutter_icons:
   macos: true
   ios: false
   android: false
-  remove_alpha_macos: true
+  # remove_alpha_macos: true
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
