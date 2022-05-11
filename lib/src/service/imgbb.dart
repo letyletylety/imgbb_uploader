@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:developer';
 
-import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:imgbb_uploader/src/component/image_card.dart';
 import 'package:logger/logger.dart';
@@ -56,7 +55,7 @@ class ImageBB {
   Future handle(http.Response resp) async {
     switch (resp.statusCode) {
       case 200:
-        bool isSuccess = await handle200(resp);
+        // bool isSuccess = await handle200(resp);
         break;
       case 400:
         await handle400(resp);

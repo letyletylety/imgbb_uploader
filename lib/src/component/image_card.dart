@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:developer';
 import 'dart:typed_data';
 
@@ -120,7 +119,7 @@ class InfoButton extends StatelessWidget {
           height: 30,
           child: Center(
             child: MaterialButton(
-              color: Color.fromARGB(255, 0, 76, 139),
+              color: const Color.fromARGB(255, 0, 76, 139),
               onPressed: () {
                 log('message');
               },

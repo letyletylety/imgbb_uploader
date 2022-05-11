@@ -57,7 +57,7 @@ class HomePage extends StatelessWidget {
         builder: (BuildContext context, WidgetRef ref, Widget? child) {
           final xfiles = ref.watch(upFilesProvider);
           // final keyy = ref.watch(homeKeyProvider);
-          final key = ref.watch(apiKeyProvider);
+          // final key = ref.watch(apiKeyProvider);
 
           ref.listen<List<http.Response>>(
             uploadResponseProvider,

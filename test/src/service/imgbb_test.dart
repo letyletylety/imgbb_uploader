@@ -17,7 +17,7 @@ void main() {
     // imgbb.handle400(resp);
     var resp = await imgbb.post('apiKey', 'image');
 
-    var hand = await imgbb.handle(resp);
+    await imgbb.handle(resp);
   });
 }
 
