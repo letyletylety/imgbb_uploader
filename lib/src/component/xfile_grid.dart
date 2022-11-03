@@ -7,6 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:imgbb_uploader/src/component/image_card.dart';
 import 'package:imgbb_uploader/src/provider/upfile_list.dart';
 
+/// all images
 class XFileGrid extends StatelessWidget {
   const XFileGrid({
     Key? key,
@@ -16,7 +17,7 @@ class XFileGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return Consumer(
       builder: (BuildContext context, WidgetRef ref, Widget? child) {
-        final xfiles = ref.watch(upFilesProvider);
+        final xfiles = ref.watch(upFilesProvider).files;
 
         return Container(
           padding: const EdgeInsets.all(8.0),
@@ -91,6 +92,7 @@ class _FileImageState extends State<FileImage> {
                       );
                     }
                     if (snapshot.hasError) {
+                      log(snapshot.error.toString());
                       return Stack(
                         children: const [
                           Icon(

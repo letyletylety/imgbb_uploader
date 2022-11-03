@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:file_selector/file_selector.dart';
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -17,7 +18,7 @@ import '../component/platform_error.dart';
 // final homeKeyProvider = Provider<GlobalKey>((ref) => GlobalKey());
 
 final uploadFutureProvider = FutureProvider<List<http.Response>>((ref) async {
-  Set<XFile> upfiles = ref.read(upFilesProvider);
+  Set<XFile> upfiles = ref.read(upFilesProvider).files;
   final apiKey = ref.read(apiKeyProvider);
 
   List<http.Response> ret = [];
@@ -102,7 +103,7 @@ class HomePage extends StatelessWidget {
               child: Column(
                 children: [
                   Expanded(
-                    child: xfiles.isEmpty
+                    child: xfiles.files.isEmpty
                         ? const FileSelectButton(
                             size: 200,
                             fontSize: 24,
@@ -157,7 +158,7 @@ class HomePage extends StatelessWidget {
                             ),
                           ),
                   ),
-                  if (xfiles.isNotEmpty)
+                  if (xfiles.files.isNotEmpty)
                     Align(
                       alignment: Alignment.bottomCenter,
                       child: Padding(
@@ -282,21 +283,35 @@ class FileSelectButton extends StatelessWidget {
 
     final typeGroup = XTypeGroup(label: 'images', extensions: ['jpg', 'png']);
 
-    await openFile(acceptedTypeGroups: [typeGroup]).then(
-      (value) {
-        if (value != null) {
-          bool result = ref.read(upFilesProvider.notifier).addFile(value);
-          if (result) {
-            log('add file');
-          } else {
-            log('?');
-          }
+    FilePickerResult? filePickerResult = await FilePicker.platform
+        .pickFiles(type: FileType.image, allowMultiple: true);
 
-          // state.add(value);
+    if (filePickerResult != null) {
+      // file picker
+      List<XFile> selectedFiles =
+          filePickerResult.files.fold([], (List<XFile> previousValue, e) {
+        if (e.path != null) {
+          return previousValue..add(XFile(e.path!));
+        } else {
+          return previousValue;
         }
+      });
+      ref.read(upFilesProvider.notifier).addMultiFiles(selectedFiles);
+    }
 
-        /// : if null ?
-      },
-    );
+    // await openFile(acceptedTypeGroups: [typeGroup]).then(
+    //   (value) {
+    //     if (value != null) {
+    //       bool result = ref.read(upFilesProvider.notifier).addFile(value);
+    //       if (result) {
+    //         log('add file');
+    //       } else {
+    //         log('?');
+    //       }
+    //       // state.add(value);
+    //     }
+    //     /// : if null ?
+    //   },
+    // );
   }
 }
